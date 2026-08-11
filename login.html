@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In - Vanguard Tech</title>
+<style>
+  :root {
+    --vt-blue: #146EB4;
+    --vt-blue-dark: #0F5A94;
+    --vt-navy: #131921;
+    --vt-navy-light: #232F3E;
+    --vt-orange-accent: #FF9900; /* used sparingly, like Amazon's cart accent - not red */
+    --vt-bg: #FFFFFF;
+    --vt-bg-soft: #F7F8FA;
+    --vt-border: #D5D9D9;
+    --vt-text: #0F1111;
+    --vt-text-muted: #565959;
+    --vt-success: #067D62;
+    --vt-error: #C7511F; /* burnt orange, not red, for warnings only */
+    --radius: 8px;
+    --shadow-sm: 0 2px 5px rgba(15,17,17,0.15);
+    --shadow-md: 0 4px 12px rgba(15,17,17,0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--vt-bg-soft);
+    color: var(--vt-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--vt-navy);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo {
+    color: #FFFFFF;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-badge {
+    background: var(--vt-orange-accent);
+    color: var(--vt-navy);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  .auth-card {
+    background: var(--vt-bg);
+    border: 1px solid var(--vt-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 380px;
+    padding: 28px 24px 24px;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 18px;
+    color: var(--vt-text);
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--vt-border);
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vt-text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .tab.active {
+    color: var(--vt-navy);
+    border-bottom-color: var(--vt-orange-accent);
+  }
+
+  form { display: none; flex-direction: column; gap: 14px; }
+  form.active { display: flex; }
+
+  label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--vt-text);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    width: 100%;
+    padding: 9px 10px;
+    font-size: 15px;
+    border: 1px solid #888C8C;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--vt-text);
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--vt-blue);
+    box-shadow: 0 0 0 3px rgba(20,110,180,0.25);
+  }
+
+  .field { display: flex; flex-direction: column; }
+
+  .btn-primary {
+    background: linear-gradient(to bottom, #FFD814, #F7CA00);
+    border: 1px solid #FCD200;
+    border-radius: 8px;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0F1111;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  .btn-primary:hover { background: linear-gradient(to bottom, #F7CA00, #F0C000); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .helper-text {
+    font-size: 12px;
+    color: var(--vt-text-muted);
+    line-height: 1.5;
+    margin-top: 2px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 18px 0;
+    color: var(--vt-text-muted);
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--vt-border);
+  }
+  .divider span { padding: 0 10px; }
+
+  .footer-note {
+    font-size: 12px;
+    color: var(--vt-text-muted);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .status-msg {
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    display: none;
+  }
+  .status-msg.error {
+    display: block;
+    background: #FDF4F1;
+    border: 1px solid var(--vt-error);
+    color: var(--vt-error);
+  }
+  .status-msg.success {
+    display: block;
+    background: #F0F8F4;
+    border: 1px solid var(--vt-success);
+    color: var(--vt-success);
+  }
+
+  .admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--vt-navy);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.4px;
+    margin-top: 10px;
+  }
+
+  footer {
+    background: var(--vt-bg-soft);
+    border-top: 1px solid var(--vt-border);
+    text-align: center;
+    padding: 18px;
+    font-size: 12px;
+    color: var(--vt-text-muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    Vanguard <span class="logo-badge">TECH</span>
+  </a>
+</header>
+
+<main>
+  <div class="auth-card">
+    <h1 id="heading">Sign in</h1>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="signin">Sign In</div>
+      <div class="tab" data-tab="signup">Create Account</div>
+    </div>
+
+    <div id="statusBox" class="status-msg"></div>
+
+    <!-- SIGN IN FORM -->
+    <form id="signinForm" class="active">
+      <div class="field">
+        <label for="signinEmail">Email</label>
+        <input type="email" id="signinEmail" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="signinPassword">Password</label>
+        <input type="password" id="signinPassword" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-primary" id="signinBtn">Sign In</button>
+      <p class="helper-text">By signing in, you agree to Vanguard Tech's Conditions of Use.</p>
+    </form>
+
+    <!-- SIGN UP FORM -->
+    <form id="signupForm">
+      <div class="field">
+        <label for="signupName">Full name</label>
+        <input type="text" id="signupName" required autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" required minlength="6" autocomplete="new-password">
+        <p class="helper-text">At least 6 characters.</p>
+      </div>
+      <button type="submit" class="btn-primary" id="signupBtn">Create your Vanguard Tech account</button>
+      <p class="helper-text">You'll receive a confirmation email. Confirm it before signing in.</p>
+    </form>
+
+    <div class="divider"><span>New to Vanguard Tech?</span></div>
+    <p class="footer-note">Create an account to post listings, message sellers, and track your orders.</p>
+  </div>
+</main>
+
+<footer>
+  &copy; <span id="year"></span> Vanguard Tech. All rights reserved.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.45.4/dist/umd/supabase.js"></script>
+<script>
+  // ---- Supabase connection ----
+  const SUPABASE_URL = "https://wuvbqcpnzgmbluuqwnit.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_xB6qrMOiyDuaPljyFBtWdQ_wxlF84Ku";
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ---- Tab switching ----
+  const tabs = document.querySelectorAll(".tab");
+  const forms = { signin: document.getElementById("signinForm"), signup: document.getElementById("signupForm") };
+  const heading = document.getElementById("heading");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      Object.values(forms).forEach(f => f.classList.remove("active"));
+      const key = tab.dataset.tab;
+      forms[key].classList.add("active");
+      heading.textContent = key === "signin" ? "Sign in" : "Create account";
+      clearStatus();
+    });
+  });
+
+  function showStatus(message, type) {
+    const box = document.getElementById("statusBox");
+    box.textContent = message;
+    box.className = "status-msg " + type;
+  }
+  function clearStatus() {
+    const box = document.getElementById("statusBox");
+    box.className = "status-msg";
+    box.textContent = "";
+  }
+
+  // ---- Sign in ----
+  document.getElementById("signinForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearStatus();
+    const btn = document.getElementById("signinBtn");
+    btn.disabled = true;
+    btn.textContent = "Signing in...";
+
+    const email = document.getElementById("signinEmail").value.trim();
+    const password = document.getElementById("signinPassword").value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    btn.disabled = false;
+    btn.textContent = "Sign In";
+
+    if (error) {
+      showStatus(error.message, "error");
+      return;
+    }
+
+    showStatus("Signed in successfully. Redirecting...", "success");
+    setTimeout(() => { window.location.href = "index.html"; }, 900);
+  });
+
+  // ---- Sign up ----
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearStatus();
+    const btn = document.getElementById("signupBtn");
+    btn.disabled = true;
+    btn.textContent = "Creating account...";
+
+    const fullName = document.getElementById("signupName").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
+    const password = document.getElementById("signupPassword").value;
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } }
+    });
+
+    btn.disabled = false;
+    btn.textContent = "Create your Vanguard Tech account";
+
+    if (error) {
+      showStatus(error.message, "error");
+      return;
+    }
+
+    showStatus("Account created. Check your email to confirm before signing in.", "success");
+  });
+
+  // ---- If already signed in, skip straight to homepage ----
+  (async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      window.location.href = "index.html";
+    }
+  })();
+</script>
+
+</body>
+</html>
