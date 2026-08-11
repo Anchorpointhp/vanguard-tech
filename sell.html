@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sell Your Phone - Vanguard Tech</title>
+<style>
+  :root {
+    --vt-blue: #146EB4;
+    --vt-navy: #131921;
+    --vt-orange-accent: #FF9900;
+    --vt-bg: #FFFFFF;
+    --vt-bg-soft: #F7F8FA;
+    --vt-border: #D5D9D9;
+    --vt-text: #0F1111;
+    --vt-text-muted: #565959;
+    --vt-success: #067D62;
+    --vt-error: #C7511F;
+    --radius: 8px;
+    --shadow-sm: 0 2px 5px rgba(15,17,17,0.15);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--vt-bg-soft);
+    color: var(--vt-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--vt-navy);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-badge {
+    background: var(--vt-orange-accent);
+    color: var(--vt-navy);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .nav-link {
+    color: #fff;
+    font-size: 13px;
+    text-decoration: none;
+    opacity: 0.85;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 28px 16px 48px;
+  }
+  .form-card {
+    background: var(--vt-bg);
+    border: 1px solid var(--vt-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+    max-width: 560px;
+    padding: 26px 22px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--vt-text-muted);
+    margin: 0 0 22px;
+  }
+  fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 20px;
+  }
+  legend {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vt-navy);
+    padding: 0 0 8px;
+    border-bottom: 1px solid var(--vt-border);
+    width: 100%;
+    margin-bottom: 14px;
+  }
+  .field { display: flex; flex-direction: column; margin-bottom: 14px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+  input[type="text"], input[type="number"], textarea, select {
+    padding: 9px 10px;
+    font-size: 15px;
+    border: 1px solid #888C8C;
+    border-radius: 4px;
+    background: #fff;
+    color: var(--vt-text);
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--vt-blue);
+    box-shadow: 0 0 0 3px rgba(20,110,180,0.25);
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .checkbox-row input { width: 16px; height: 16px; }
+
+  .upload-zone {
+    border: 2px dashed var(--vt-border);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--vt-bg-soft);
+  }
+  .upload-zone:hover { border-color: var(--vt-blue); }
+  .upload-zone p { margin: 6px 0 0; font-size: 13px; color: var(--vt-text-muted); }
+  .upload-icon { font-size: 28px; }
+
+  #previewGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .preview-thumb {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--vt-border);
+  }
+  .preview-thumb img {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .preview-thumb button {
+    position: absolute; top: 3px; right: 3px;
+    background: rgba(15,17,17,0.7);
+    color: #fff; border: none; border-radius: 50%;
+    width: 20px; height: 20px; font-size: 12px; cursor: pointer;
+    line-height: 1;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(to bottom, #FFD814, #F7CA00);
+    border: 1px solid #FCD200;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0F1111;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .status-msg {
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .status-msg.error { display: block; background: #FDF4F1; border: 1px solid var(--vt-error); color: var(--vt-error); }
+  .status-msg.success { display: block; background: #F0F8F4; border: 1px solid var(--vt-success); color: var(--vt-success); }
+  .status-msg.info { display: block; background: #EEF6FC; border: 1px solid var(--vt-blue); color: var(--vt-blue); }
+
+  .pending-note {
+    font-size: 12px;
+    color: var(--vt-text-muted);
+    background: var(--vt-bg-soft);
+    border: 1px solid var(--vt-border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">Vanguard <span class="logo-badge">TECH</span></a>
+  <a href="index.html" class="nav-link">← Back to marketplace</a>
+</header>
+
+<main>
+  <div class="form-card">
+    <h1>Sell your phone</h1>
+    <p class="subtitle">Fill in the details below. Your listing will be reviewed before it goes live.</p>
+
+    <div id="statusBox" class="status-msg"></div>
+    <div id="authGate" class="status-msg info" style="display:none;">
+      You need to sign in before posting a listing. <a href="login.html">Sign in or create an account</a>.
+    </div>
+
+    <form id="listingForm">
+      <fieldset>
+        <legend>Phone details</legend>
+
+        <div class="field">
+          <label for="title">Listing title</label>
+          <input type="text" id="title" placeholder="e.g. iPhone 13 Pro Max 256GB - Sierra Blue" required>
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="brand">Brand</label>
+            <select id="brand" required>
+              <option value="">Select brand</option>
+              <option>Apple</option>
+              <option>Samsung</option>
+              <option>Tecno</option>
+              <option>Infinix</option>
+              <option>Xiaomi</option>
+              <option>Google</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="model">Model</label>
+            <input type="text" id="model" placeholder="e.g. iPhone 13 Pro Max" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="condition">Condition</label>
+          <select id="condition" required>
+            <option value="">Select condition</option>
+            <option value="new">New</option>
+            <option value="used">Used</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" placeholder="Storage size, color, battery health, any accessories included, reason for selling, etc." required></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Price</legend>
+        <div class="field">
+          <label for="price">Price (₦)</label>
+          <input type="number" id="price" min="0" step="1" placeholder="e.g. 450000" required>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="negotiable">
+          <label for="negotiable" style="margin:0;">Price is negotiable</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Photos</legend>
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📷</div>
+          <strong>Tap to add photos</strong>
+          <p>Clear photos from multiple angles help your listing sell faster. Up to 6 images.</p>
+          <input type="file" id="fileInput" accept="image/*" multiple hidden>
+        </div>
+        <div id="previewGrid"></div>
+      </fieldset>
+
+      <button type="submit" class="btn-primary" id="submitBtn">Submit listing for review</button>
+
+      <div class="pending-note">
+        Listings are checked by Vanguard Tech before they appear in the marketplace. This usually protects buyers and keeps listings accurate — approval isn't instant.
+      </div>
+    </form>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.45.4/dist/umd/supabase.js"></script>
+<script>
+  const SUPABASE_URL = "https://wuvbqcpnzgmbluuqwnit.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_xB6qrMOiyDuaPljyFBtWdQ_wxlF84Ku";
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  let currentUser = null;
+  let selectedFiles = [];
+  const MAX_IMAGES = 6;
+
+  function showStatus(message, type) {
+    const box = document.getElementById("statusBox");
+    box.textContent = message;
+    box.className = "status-msg " + type;
+  }
+  function clearStatus() {
+    const box = document.getElementById("statusBox");
+    box.className = "status-msg";
+    box.textContent = "";
+  }
+
+  // ---- Auth check ----
+  (async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      document.getElementById("authGate").style.display = "block";
+      document.getElementById("listingForm").style.display = "none";
+    } else {
+      currentUser = session.user;
+    }
+  })();
+
+  // ---- Image upload UI ----
+  const uploadZone = document.getElementById("uploadZone");
+  const fileInput = document.getElementById("fileInput");
+  const previewGrid = document.getElementById("previewGrid");
+
+  uploadZone.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", (e) => {
+    const newFiles = Array.from(e.target.files);
+    for (const file of newFiles) {
+      if (selectedFiles.length >= MAX_IMAGES) break;
+      selectedFiles.push(file);
+    }
+    renderPreviews();
+    fileInput.value = "";
+  });
+
+  function renderPreviews() {
+    previewGrid.innerHTML = "";
+    selectedFiles.forEach((file, index) => {
+      const thumb = document.createElement("div");
+      thumb.className = "preview-thumb";
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "✕";
+      removeBtn.type = "button";
+      removeBtn.onclick = () => {
+        selectedFiles.splice(index, 1);
+        renderPreviews();
+      };
+      thumb.appendChild(img);
+      thumb.appendChild(removeBtn);
+      previewGrid.appendChild(thumb);
+    });
+  }
+
+  // ---- Submit listing ----
+  document.getElementById("listingForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearStatus();
+
+    if (!currentUser) {
+      showStatus("Please sign in before posting a listing.", "error");
+      return;
+    }
+    if (selectedFiles.length === 0) {
+      showStatus("Please add at least one photo of the phone.", "error");
+      return;
+    }
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    try {
+      // 1. Insert the listing row first
+      const { data: listing, error: insertError } = await supabaseClient
+        .from("listings")
+        .insert({
+          seller_id: currentUser.id,
+          title: document.getElementById("title").value.trim(),
+          description: document.getElementById("description").value.trim(),
+          price: parseFloat(document.getElementById("price").value),
+          is_negotiable: document.getElementById("negotiable").checked,
+          brand: document.getElementById("brand").value,
+          model: document.getElementById("model").value.trim(),
+          condition: document.getElementById("condition").value,
+          status: "pending"
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      // 2. Upload each image to storage, named by listing id
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const ext = file.name.split(".").pop();
+        const path = `${currentUser.id}/${listing.id}/${i}.${ext}`;
+        const { error: uploadError } = await supabaseClient.storage
+          .from("listing-images")
+          .upload(path, file, { upsert: true });
+        if (uploadError) throw uploadError;
+      }
+
+      showStatus("Listing submitted! It will appear in the marketplace once approved.", "success");
+      document.getElementById("listingForm").reset();
+      selectedFiles = [];
+      renderPreviews();
+
+    } catch (err) {
+      showStatus("Something went wrong: " + err.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Submit listing for review";
+    }
+  });
+</script>
+
+</body>
+</html>
