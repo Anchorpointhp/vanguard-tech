@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Phones — Vanguard Tech</title>
+<style>
+  :root{
+    --navy:#0F1729;
+    --navy-2:#1B2740;
+    --gold:#F5A623;
+    --gold-dark:#D98E12;
+    --teal:#0EA5A4;
+    --ink:#16181D;
+    --muted:#6B7280;
+    --line:#E5E7EB;
+    --bg:#FFFFFF;
+    --bg-soft:#F7F8FA;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+  }
+  a{color:inherit;text-decoration:none;}
+
+  /* Header */
+  header{
+    background:var(--navy);
+    color:#fff;
+    padding:14px 20px;
+  }
+  .header-row{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .logo{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-0.02em;
+    white-space:nowrap;
+  }
+  .logo span{color:var(--gold);}
+  .search-bar{
+    flex:1;
+    display:flex;
+    min-width:220px;
+  }
+  .search-bar input{
+    flex:1;
+    border:none;
+    border-radius:6px 0 0 6px;
+    padding:10px 14px;
+    font-size:14px;
+  }
+  .search-bar button{
+    background:var(--gold);
+    border:none;
+    color:var(--navy);
+    font-weight:700;
+    padding:0 18px;
+    border-radius:0 6px 6px 0;
+    cursor:pointer;
+  }
+  .header-actions{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    white-space:nowrap;
+  }
+  .btn{
+    display:inline-block;
+    padding:9px 16px;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .btn-gold{background:var(--gold);color:var(--navy);}
+  .btn-gold:hover{background:var(--gold-dark);}
+  .btn-outline{border-color:rgba(255,255,255,0.4);color:#fff;}
+  .btn-outline:hover{border-color:#fff;}
+
+  /* Filter bar */
+  .filter-bar{
+    background:var(--bg-soft);
+    border-bottom:1px solid var(--line);
+    padding:12px 20px;
+  }
+  .filter-row{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .filter-row select, .filter-row input[type="text"]{
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:13px;
+    background:#fff;
+  }
+  .filter-label{
+    font-size:13px;
+    color:var(--muted);
+    font-weight:600;
+  }
+
+  /* Main */
+  main{
+    max-width:1200px;
+    margin:0 auto;
+    padding:24px 20px 60px;
+  }
+  .results-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .results-head h1{
+    font-size:20px;
+    margin:0;
+  }
+  .results-count{
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+    gap:18px;
+  }
+
+  .card{
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .card:hover{
+    box-shadow:0 6px 20px rgba(15,23,41,0.08);
+    transform:translateY(-2px);
+  }
+  .card-img{
+    aspect-ratio:1/1;
+    background:var(--bg-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+  .card-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .badge-admin{
+    position:absolute;
+    top:8px;
+    left:8px;
+    background:var(--teal);
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    padding:4px 8px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .badge-negotiable{
+    position:absolute;
+    top:8px;
+    right:8px;
+    background:rgba(15,23,41,0.85);
+    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    padding:4px 8px;
+    border-radius:20px;
+  }
+  .card-body{
+    padding:12px 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
+  }
+  .card-title{
+    font-size:14.5px;
+    font-weight:600;
+    line-height:1.3;
+    margin:0;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .card-condition{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .card-price{
+    font-size:18px;
+    font-weight:800;
+    color:var(--ink);
+    margin-top:2px;
+  }
+  .card-seller{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .card-actions{
+    margin-top:auto;
+    display:flex;
+    gap:8px;
+    padding-top:10px;
+  }
+  .card-actions .btn{
+    flex:1;
+    text-align:center;
+    padding:8px 10px;
+    font-size:13px;
+  }
+  .btn-navy{background:var(--navy);color:#fff;}
+  .btn-navy:hover{background:var(--navy-2);}
+  .btn-line{border:1px solid var(--line);color:var(--ink);background:#fff;}
+  .btn-line:hover{background:var(--bg-soft);}
+
+  /* Empty / loading states */
+  .state-box{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+  }
+  .state-box h2{
+    color:var(--ink);
+    font-size:18px;
+    margin-bottom:6px;
+  }
+  .spinner{
+    width:26px;height:26px;
+    border:3px solid var(--line);
+    border-top-color:var(--gold);
+    border-radius:50%;
+    margin:0 auto 14px;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media (max-width:640px){
+    .header-row{gap:10px;}
+    .search-bar{order:3; width:100%;}
+    .logo{font-size:18px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="logo">Vanguard<span>Tech</span></div>
+    <form class="search-bar" onsubmit="return handleSearch(event)">
+      <input type="text" id="searchInput" placeholder="Search phones, e.g. iPhone 13 Pro">
+      <button type="submit">Search</button>
+    </form>
+    <div class="header-actions">
+      <a href="repairs.html" class="btn btn-outline">Find a repair tech</a>
+      <a href="sell.html" class="btn btn-gold">Sell a device</a>
+      <a href="login.html" class="btn btn-outline">Sign in</a>
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <select id="categoryFilter" onchange="applyFilters()">
+      <option value="">Phones & Laptops</option>
+      <option value="Phone">Phones</option>
+      <option value="Laptop">Laptops</option>
+    </select>
+    <select id="brandFilter" onchange="applyFilters()">
+      <option value="">All brands</option>
+      <option value="Apple">Apple</option>
+      <option value="Samsung">Samsung</option>
+      <option value="Tecno">Tecno</option>
+      <option value="Infinix">Infinix</option>
+      <option value="Xiaomi">Xiaomi</option>
+      <option value="Google">Google</option>
+      <option value="HP">HP</option>
+      <option value="Dell">Dell</option>
+      <option value="Lenovo">Lenovo</option>
+      <option value="MacBook">MacBook</option>
+      <option value="Other">Other</option>
+    </select>
+    <select id="conditionFilter" onchange="applyFilters()">
+      <option value="">Any condition</option>
+      <option value="new">New</option>
+      <option value="used">Used</option>
+    </select>
+    <select id="sortFilter" onchange="applyFilters()">
+      <option value="newest">Newest first</option>
+      <option value="price_low">Price: low to high</option>
+      <option value="price_high">Price: high to low</option>
+    </select>
+  </div>
+</div>
+
+<main>
+  <div class="results-head">
+    <h1>Browse phones</h1>
+    <span class="results-count" id="resultsCount">Loading listings…</span>
+  </div>
+
+  <div id="gridContainer" class="grid"></div>
+  <div id="stateContainer"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ---- Connect this to your Supabase project ----
+  const SUPABASE_URL = "https://wuvbqcpnzgmbluuqwnit.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_xB6qrMOiyDuaPljyFBtWdQ_wxlF84Ku";
+  const isConfigured = SUPABASE_URL.startsWith("http") && !SUPABASE_ANON_KEY.startsWith("YOUR_");
+  const supabase = isConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  let allListings = [];
+
+  async function loadListings(){
+    const grid = document.getElementById('gridContainer');
+    const stateBox = document.getElementById('stateContainer');
+    const count = document.getElementById('resultsCount');
+
+    if (!isConfigured){
+      count.textContent = "";
+      grid.innerHTML = "";
+      stateBox.innerHTML = `<div class="state-box"><h2>Not connected yet</h2><p>Add your Supabase URL and anon key near the bottom of this file to load real listings.</p></div>`;
+      return;
+    }
+
+    stateBox.innerHTML = `<div class="state-box"><div class="spinner"></div>Loading listings…</div>`;
+    grid.innerHTML = "";
+
+    try {
+      // Only approved listings should ever reach the public page.
+      const { data, error } = await supabase
+        .from('listings')
+        .select('*')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+
+      if (error){
+        stateBox.innerHTML = `<div class="state-box"><h2>Couldn't load listings</h2><p>${error.message}</p></div>`;
+        count.textContent = "";
+        return;
+      }
+
+      allListings = data || [];
+
+      // sell.html uploads photos to Storage (listing-images/{seller_id}/{listing_id}/0.ext),
+      // not a simple image_url column, so fetch the first photo for each listing.
+      await Promise.all(allListings.map(async (item) => {
+        try {
+          const folder = `${item.seller_id}/${item.id}`;
+          const { data: files } = await supabase.storage.from('listing-images').list(folder);
+          if (files && files.length){
+            const first = files.sort((a,b) => a.name.localeCompare(b.name))[0];
+            const { data: pub } = supabase.storage.from('listing-images').getPublicUrl(`${folder}/${first.name}`);
+            item.image_url = pub.publicUrl;
+          }
+        } catch (e) { /* no photo found, card will show placeholder */ }
+      }));
+
+      count.textContent = `${allListings.length} listing${allListings.length === 1 ? '' : 's'}`;
+      renderListings(allListings);
+    } catch (err){
+      stateBox.innerHTML = `<div class="state-box"><h2>Couldn't load listings</h2><p>${err.message}</p></div>`;
+      count.textContent = "";
+    }
+  }
+
+  function renderListings(items){
+    const grid = document.getElementById('gridContainer');
+    const stateBox = document.getElementById('stateContainer');
+
+    if (!items.length){
+      grid.innerHTML = "";
+      stateBox.innerHTML = `<div class="state-box"><h2>No listings yet</h2><p>Be the first to post a phone — it takes about a minute.</p></div>`;
+      return;
+    }
+
+    stateBox.innerHTML = "";
+    grid.innerHTML = items.map(item => {
+      const conditionLabel = item.condition ? item.condition.charAt(0).toUpperCase() + item.condition.slice(1) : 'Used';
+      return `
+      <a class="card" href="listing.html?id=${item.id}">
+        <div class="card-img">
+          ${item.is_admin ? `<span class="badge-admin">✓ Vanguard Tech</span>` : ""}
+          ${item.is_negotiable ? `<span class="badge-negotiable">Negotiable</span>` : ""}
+          <img src="${item.image_url || 'https://placehold.co/400x400?text=No+Photo'}" alt="${item.title}">
+        </div>
+        <div class="card-body">
+          <p class="card-title">${item.title}</p>
+          <span class="card-condition">${conditionLabel} · ${item.brand || ''} ${item.model ? '· ' + item.model : ''}</span>
+          <span class="card-price">₦${Number(item.price).toLocaleString()}</span>
+          <span class="card-seller">${item.is_admin ? 'Sold by Vanguard Tech' : 'Sold by a Vanguard Tech seller'}</span>
+          <div class="card-actions">
+            <span class="btn btn-navy">View</span>
+            <span class="btn btn-line">Message</span>
+          </div>
+        </div>
+      </a>
+    `;
+    }).join("");
+  }
+
+  function applyFilters(){
+    const category = document.getElementById('categoryFilter').value;
+    const brand = document.getElementById('brandFilter').value;
+    const condition = document.getElementById('conditionFilter').value;
+    const sort = document.getElementById('sortFilter').value;
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    let filtered = allListings.filter(item => {
+      const matchesCategory = !category || item.category === category;
+      const matchesBrand = !brand || item.brand === brand;
+      const matchesCondition = !condition || item.condition === condition;
+      const matchesSearch = !q || (item.title || '').toLowerCase().includes(q);
+      return matchesCategory && matchesBrand && matchesCondition && matchesSearch;
+    });
+
+    if (sort === 'price_low') filtered.sort((a,b) => a.price - b.price);
+    if (sort === 'price_high') filtered.sort((a,b) => b.price - a.price);
+    if (sort === 'newest') filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+    document.getElementById('resultsCount').textContent = `${filtered.length} listing${filtered.length === 1 ? '' : 's'}`;
+    renderListings(filtered);
+  }
+
+  function handleSearch(e){
+    e.preventDefault();
+    applyFilters();
+    return false;
+  }
+
+  loadListings();
+</script>
+
+</body>
+</html>
