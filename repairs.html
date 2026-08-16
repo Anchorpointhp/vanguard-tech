@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repair Techs | Vanguard Tech</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase.min.js"></script>
+<style>
+  :root{
+    --amazon-blue:#131921;
+    --amazon-blue-light:#232f3e;
+    --amazon-yellow:#febd69;
+    --amazon-orange:#ff9900;
+    --text-dark:#0f1111;
+    --text-gray:#565959;
+    --border:#d5d9d9;
+    --bg:#fff;
+    --bg-alt:#f7f7f7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Amazon Ember",Arial,Helvetica,sans-serif;background:var(--bg-alt);color:var(--text-dark);}
+  a{text-decoration:none;color:inherit;}
+
+  header{background:var(--amazon-blue);color:#fff;}
+  .topbar{display:flex;align-items:center;padding:10px 16px;gap:16px;flex-wrap:wrap;}
+  .logo{font-size:20px;font-weight:700;color:#fff;white-space:nowrap;}
+  .logo span{color:var(--amazon-orange);}
+  nav.mainnav{background:var(--amazon-blue-light);}
+  nav.mainnav ul{display:flex;list-style:none;padding:8px 16px;gap:20px;overflow-x:auto;}
+  nav.mainnav a{color:#fff;font-size:14px;white-space:nowrap;}
+  nav.mainnav a.active{font-weight:700;border-bottom:2px solid var(--amazon-orange);padding-bottom:4px;}
+
+  .hero{background:#fff;border-bottom:1px solid var(--border);padding:24px 16px;text-align:center;}
+  .hero h1{font-size:26px;margin-bottom:8px;}
+  .hero p{color:var(--text-gray);font-size:14px;max-width:600px;margin:0 auto;}
+  .cta-btn{display:inline-block;margin-top:16px;background:var(--amazon-yellow);border:1px solid #a88734;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;}
+  .cta-btn:hover{background:#f3a847;}
+
+  .container{max-width:1100px;margin:20px auto;padding:0 16px;}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .filters select, .filters input{padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;}
+  .card img{width:100%;height:140px;object-fit:cover;border-radius:8px;background:#eee;}
+  .card h3{font-size:15px;}
+  .badge{display:inline-block;background:#232f3e;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;width:fit-content;}
+  .badge.admin{background:var(--amazon-orange);}
+  .tag{display:inline-block;background:#eef3f8;color:#0d5c9c;font-size:11px;padding:2px 8px;border-radius:4px;margin-right:4px;width:fit-content;}
+  .price-note{font-size:13px;color:var(--text-gray);}
+  .contact-row{display:flex;gap:8px;margin-top:6px;}
+  .contact-row a{flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;border:1px solid var(--border);background:#fff;}
+  .contact-row a.whatsapp{background:#25D366;color:#fff;border:none;}
+
+  /* Modal / form */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;z-index:100;padding:30px 16px;}
+  .modal{background:#fff;border-radius:10px;max-width:480px;width:100%;padding:20px;}
+  .modal h2{margin-bottom:14px;font-size:18px;}
+  .modal label{display:block;font-size:13px;margin:10px 0 4px;font-weight:600;}
+  .modal input, .modal select, .modal textarea{width:100%;padding:9px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
+  .modal textarea{resize:vertical;min-height:70px;}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .modal-actions button{flex:1;padding:10px;border-radius:6px;font-size:14px;cursor:pointer;}
+  .btn-primary{background:var(--amazon-yellow);border:1px solid #a88734;font-weight:600;}
+  .btn-secondary{background:#fff;border:1px solid var(--border);}
+  .status-msg{font-size:13px;margin-top:10px;}
+  .status-msg.ok{color:#067d62;}
+  .status-msg.err{color:#c40000;}
+
+  .empty-state{text-align:center;padding:40px;color:var(--text-gray);}
+  footer{text-align:center;padding:20px;color:var(--text-gray);font-size:13px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topbar">
+    <a href="index.html" class="logo">Vanguard<span>Tech</span></a>
+  </div>
+  <nav class="mainnav">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="listings.html">Marketplace</a></li>
+      <li><a href="sell.html">Sell a Device</a></li>
+      <li><a href="repairs.html" class="active">Repair Techs</a></li>
+      <li><a href="login.html">Sign In</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Find a Trusted Repair Technician</h1>
+  <p>Browse phone and laptop repair techs near you, or list your own repair service for buyers and sellers to find.</p>
+  <button class="cta-btn" onclick="openModal()">+ List Your Repair Service</button>
+</section>
+
+<div class="container">
+  <div class="filters">
+    <select id="filterDeviceType">
+      <option value="">All Device Types</option>
+      <option value="phone">Phone Repairs</option>
+      <option value="laptop">Laptop Repairs</option>
+      <option value="both">Phones & Laptops</option>
+    </select>
+    <input type="text" id="filterLocation" placeholder="Filter by location...">
+  </div>
+
+  <div id="techGrid" class="grid">
+    <p class="empty-state">Loading repair techs...</p>
+  </div>
+</div>
+
+<footer>&copy; 2026 Vanguard Tech. All rights reserved.</footer>
+
+<!-- Modal for listing a repair service -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>List Your Repair Service</h2>
+    <form id="repairForm">
+      <label>Full Name / Business Name</label>
+      <input type="text" id="techName" required>
+
+      <label>Device Types You Repair</label>
+      <select id="deviceType" required>
+        <option value="phone">Phones only</option>
+        <option value="laptop">Laptops only</option>
+        <option value="both">Phones & Laptops</option>
+      </select>
+
+      <label>Specialty (e.g. screen replacement, battery, software)</label>
+      <input type="text" id="specialty" required>
+
+      <label>Description of Your Services</label>
+      <textarea id="description" required></textarea>
+
+      <label>Location</label>
+      <input type="text" id="location" required placeholder="e.g. Maraba Market, Abuja">
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required placeholder="e.g. 0813 099 4056">
+
+      <label>WhatsApp Number (optional, with country code)</label>
+      <input type="text" id="whatsapp" placeholder="e.g. 2348130994056">
+
+      <label>Photo of your workspace / ID (optional)</label>
+      <input type="file" id="photo" accept="image/*">
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Submit for Review</button>
+      </div>
+      <div id="formStatus" class="status-msg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // ---- Supabase setup ----
+  const SUPABASE_URL = "https://wuvbqcpnzgmbluuqwnit.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_xB6qrMOiyDuaPljyFBtWdQ_wxlF84Ku";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const ADMIN_NAME = "Vanguard Tech"; // matches admin badge logic used on listings.html
+
+  function openModal(){ document.getElementById('modalOverlay').style.display = 'flex'; }
+  function closeModal(){ document.getElementById('modalOverlay').style.display = 'none'; }
+
+  async function loadTechs(){
+    const grid = document.getElementById('techGrid');
+    grid.innerHTML = '<p class="empty-state">Loading repair techs...</p>';
+
+    const { data, error } = await sb
+      .from('repair_techs')
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', {ascending:false});
+
+    if(error){
+      grid.innerHTML = `<p class="empty-state">Could not load repair techs. (${error.message})</p>`;
+      return;
+    }
+
+    if(!data || data.length === 0){
+      grid.innerHTML = '<p class="empty-state">No repair techs listed yet. Be the first!</p>';
+      return;
+    }
+
+    renderTechs(data);
+  }
+
+  function renderTechs(data){
+    const deviceFilter = document.getElementById('filterDeviceType').value;
+    const locationFilter = document.getElementById('filterLocation').value.toLowerCase();
+
+    const filtered = data.filter(t => {
+      const matchesDevice = !deviceFilter || t.device_type === deviceFilter;
+      const matchesLocation = !locationFilter || (t.location || '').toLowerCase().includes(locationFilter);
+      return matchesDevice && matchesLocation;
+    });
+
+    const grid = document.getElementById('techGrid');
+
+    if(filtered.length === 0){
+      grid.innerHTML = '<p class="empty-state">No repair techs match your filters.</p>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(t => {
+      const isAdmin = t.name === ADMIN_NAME;
+      const photo = t.photo_url || 'https://via.placeholder.com/300x180?text=No+Photo';
+      const whatsappLink = t.whatsapp ? `https://wa.me/${t.whatsapp}` : null;
+
+      return `
+        <div class="card">
+          <img src="${photo}" alt="${t.name}">
+          ${isAdmin ? '<span class="badge admin">Official Vanguard Tech</span>' : ''}
+          <h3>${t.name}</h3>
+          <span class="tag">${deviceLabel(t.device_type)}</span>
+          <p class="price-note">${t.specialty || ''}</p>
+          <p class="price-note">${t.description || ''}</p>
+          <p class="price-note">📍 ${t.location || 'Location not provided'}</p>
+          <div class="contact-row">
+            ${whatsappLink ? `<a class="whatsapp" href="${whatsappLink}" target="_blank">WhatsApp</a>` : ''}
+            <a href="tel:${t.phone}">Call</a>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function deviceLabel(type){
+    if(type === 'phone') return 'Phone Repairs';
+    if(type === 'laptop') return 'Laptop Repairs';
+    if(type === 'both') return 'Phones & Laptops';
+    return 'Repairs';
+  }
+
+  document.getElementById('filterDeviceType').addEventListener('change', loadTechs);
+  document.getElementById('filterLocation').addEventListener('input', () => {
+    clearTimeout(window._locDebounce);
+    window._locDebounce = setTimeout(loadTechs, 300);
+  });
+
+  // ---- Submit new repair tech listing ----
+  document.getElementById('repairForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById('formStatus');
+    statusEl.textContent = 'Submitting...';
+    statusEl.className = 'status-msg';
+
+    const name = document.getElementById('techName').value.trim();
+    const device_type = document.getElementById('deviceType').value;
+    const specialty = document.getElementById('specialty').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const whatsapp = document.getElementById('whatsapp').value.trim();
+    const photoFile = document.getElementById('photo').files[0];
+
+    let photo_url = null;
+
+    try{
+      if(photoFile){
+        const fileName = `${Date.now()}_${photoFile.name}`;
+        const { data: uploadData, error: uploadError } = await sb.storage
+          .from('repair-photos')
+          .upload(fileName, photoFile);
+
+        if(uploadError) throw uploadError;
+
+        const { data: publicUrlData } = sb.storage.from('repair-photos').getPublicUrl(fileName);
+        photo_url = publicUrlData.publicUrl;
+      }
+
+      const { error: insertError } = await sb.from('repair_techs').insert([{
+        name, device_type, specialty, description, location, phone,
+        whatsapp: whatsapp || null,
+        photo_url,
+        status: 'pending'
+      }]);
+
+      if(insertError) throw insertError;
+
+      statusEl.textContent = 'Submitted! Your listing will appear once approved.';
+      statusEl.className = 'status-msg ok';
+      document.getElementById('repairForm').reset();
+      setTimeout(closeModal, 1800);
+
+    } catch(err){
+      statusEl.textContent = 'Error: ' + err.message;
+      statusEl.className = 'status-msg err';
+    }
+  });
+
+  loadTechs();
+</script>
+
+</body>
+</html>
