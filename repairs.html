@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Repair Techs | Vanguard Tech</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{
     --amazon-blue:#131921;
@@ -290,6 +290,7 @@
     } catch(err){
       statusEl.textContent = 'Error: ' + err.message;
       statusEl.className = 'status-msg err';
+      alert('Submission error: ' + err.message);
     }
   });
 
